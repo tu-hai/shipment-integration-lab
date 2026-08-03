@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: carrier-mock-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: carrier-mock-service
+  template:
+    metadata:
+      labels:
+        app: carrier-mock-service
+    spec:
+      containers:
+        - name: carrier-mock-service
+          image: shipmentintegration/carrier-mock-service:latest
+          ports:
+            - containerPort: 8003

@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: shipment-integration-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shipment-integration-service
+  template:
+    metadata:
+      labels:
+        app: shipment-integration-service
+    spec:
+      containers:
+        - name: shipment-integration-service
+          image: shipmentintegration/shipment-integration-service:latest
+          ports:
+            - containerPort: 8002

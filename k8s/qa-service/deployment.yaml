@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: qa-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: qa-service
+  template:
+    metadata:
+      labels:
+        app: qa-service
+    spec:
+      containers:
+        - name: qa-service
+          image: shipmentintegration/qa-service:latest
+          ports:
+            - containerPort: 8004
