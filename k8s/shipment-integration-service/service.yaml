@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: shipment-integration-service
+spec:
+  selector:
+    app: shipment-integration-service
+  ports:
+    - port: 8002
+      targetPort: 8002

@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: shipment-integration-service
+
+server:
+  port: 8002

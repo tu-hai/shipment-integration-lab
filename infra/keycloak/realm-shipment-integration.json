@@ -1,0 +1,8 @@
+{
+  "realm": "shipment-integration",
+  "enabled": true,
+  "roles": {
+    "realm": []
+  },
+  "clients": []
+}

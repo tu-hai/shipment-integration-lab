@@ -1,0 +1,14 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: shipment-integration
+
+resources:
+  - order-service/deployment.yaml
+  - order-service/service.yaml
+  - shipment-integration-service/deployment.yaml
+  - shipment-integration-service/service.yaml
+  - carrier-mock-service/deployment.yaml
+  - carrier-mock-service/service.yaml
+  - qa-service/deployment.yaml
+  - qa-service/service.yaml
