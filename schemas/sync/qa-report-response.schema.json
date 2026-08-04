@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/qa-report-response.schema.json",
+  "title": "QaReportResponse",
+  "type": "object",
+  "required": ["reportId", "scenarioId", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "reportId": {
+      "type": "string",
+      "pattern": "^QAR-[A-Za-z0-9\\-]+$"
+    },
+    "scenarioId": {
+      "type": "string",
+      "pattern": "^SCN-[A-Za-z0-9\\-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PASSED", "FAILED", "RUNNING"]
+    },
+    "executedAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  }
+}

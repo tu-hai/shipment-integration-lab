@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/shipment-response.schema.json",
+  "title": "ShipmentResponse",
+  "type": "object",
+  "required": ["shipmentId", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "shipmentId": {
+      "type": "string",
+      "pattern": "^SHP-[A-Za-z0-9\\-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["PROCESSING", "READY_FOR_PICKUP", "COMPLETED", "FAILED"]
+    },
+    "carrierShipmentId": {
+      "type": "string",
+      "pattern": "^CRS-[A-Za-z0-9\\-]+$"
+    }
+  }
+}

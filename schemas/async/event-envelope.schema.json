@@ -1,0 +1,52 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/async/event-envelope.schema.json",
+  "title": "EventEnvelope",
+  "type": "object",
+  "required": [
+    "eventId",
+    "eventType",
+    "eventVersion",
+    "occurredAt",
+    "correlationId",
+    "producer",
+    "payload"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "eventId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "eventType": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 100
+    },
+    "eventVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "occurredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "correlationId": {
+      "type": "string",
+      "minLength": 8,
+      "maxLength": 128
+    },
+    "producer": {
+      "type": "string",
+      "enum": [
+        "order-service",
+        "shipment-integration-service",
+        "carrier-mock-service",
+        "qa-service"
+      ]
+    },
+    "payload": {
+      "type": "object"
+    }
+  }
+}

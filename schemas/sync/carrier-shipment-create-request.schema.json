@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/carrier-shipment-create-request.schema.json",
+  "title": "CarrierShipmentCreateRequest",
+  "type": "object",
+  "required": ["shipmentId", "orderId", "carrierCode"],
+  "additionalProperties": false,
+  "properties": {
+    "shipmentId": {
+      "type": "string",
+      "pattern": "^SHP-[A-Za-z0-9\\-]+$"
+    },
+    "orderId": {
+      "type": "string",
+      "pattern": "^ORD-[A-Za-z0-9\\-]+$"
+    },
+    "carrierCode": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 32
+    }
+  }
+}

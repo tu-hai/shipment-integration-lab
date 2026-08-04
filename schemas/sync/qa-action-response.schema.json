@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/qa-action-response.schema.json",
+  "title": "QaActionResponse",
+  "type": "object",
+  "required": ["scenarioId", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "scenarioId": {
+      "type": "string",
+      "pattern": "^SCN-[A-Za-z0-9\\-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ACCEPTED"]
+    }
+  }
+}
