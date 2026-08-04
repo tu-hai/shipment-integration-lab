@@ -1,8 +1,96 @@
 {
   "realm": "shipment-integration",
   "enabled": true,
+  "accessTokenLifespan": 3600,
   "roles": {
-    "realm": []
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Administrator role with full access"
+      },
+      {
+        "name": "customer",
+        "description": "Customer role for order management"
+      },
+      {
+        "name": "carrier",
+        "description": "Carrier partner role"
+      }
+    ]
   },
-  "clients": []
+  "clients": [
+    {
+      "clientId": "kong-gateway",
+      "name": "Kong API Gateway Client",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "kong-gateway-secret-key-12345",
+      "directAccessGrantsEnabled": true,
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "order-service",
+      "name": "Order Service Client",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "order-service-secret-key-12345",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "shipment-service",
+      "name": "Shipment Integration Service Client",
+      "enabled": true,
+      "publicClient": false,
+      "secret": "shipment-service-secret-key-12345",
+      "serviceAccountsEnabled": true
+    },
+    {
+      "clientId": "postman-client",
+      "name": "Postman Test Client",
+      "enabled": true,
+      "publicClient": true,
+      "directAccessGrantsEnabled": true,
+      "standardFlowEnabled": true,
+      "redirectUris": [
+        "https://oauth.pstmn.io/v1/browser-callback",
+        "http://localhost:8000/*"
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "john_customer",
+      "enabled": true,
+      "email": "john.customer@example.com",
+      "firstName": "John",
+      "lastName": "Customer",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "customer"
+      ]
+    },
+    {
+      "username": "admin_user",
+      "enabled": true,
+      "email": "admin@example.com",
+      "firstName": "Admin",
+      "lastName": "System",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "admin123",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "admin"
+      ]
+    }
+  ]
 }

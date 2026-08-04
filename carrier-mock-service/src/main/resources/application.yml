@@ -1,6 +1,16 @@
+server:
+  port: ${SERVER_PORT:8003}
+
 spring:
   application:
     name: carrier-mock-service
 
-server:
-  port: 8003
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true

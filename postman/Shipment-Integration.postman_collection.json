@@ -1,27 +1,122 @@
 {
   "info": {
-    "name": "Shipment Integration",
-    "description": "Starter collection for shipment integration services.",
+    "name": "Shipment Integration Lab (Full 7 Criteria Collection)",
+    "description": "Complete Postman testing suite covering Keycloak OAuth2 token generation, Kong Gateway routing, Order Service, Shipment Integration Service, Carrier Partner Mock Service, and QA Service.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
     {
-      "name": "Health check",
+      "name": "1. Keycloak IDP - Get Customer Token",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/x-www-form-urlencoded" }
+        ],
+        "body": {
+          "mode": "urlencoded",
+          "urlencoded": [
+            { "key": "grant_type", "value": "password" },
+            { "key": "client_id", "value": "postman-client" },
+            { "key": "username", "value": "john_customer" },
+            { "key": "password", "value": "password123" }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:8080/realms/shipment-integration/protocol/openid-connect/token",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8080",
+          "path": ["realms", "shipment-integration", "protocol", "openid-connect", "token"]
+        }
+      }
+    },
+    {
+      "name": "2. Order Service - Create Order (Kong Gateway / Direct)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"ORD-10001\",\n  \"customerId\": "CUS-01\",\n  \"destination\": {\n    \"country\": \"VN\",\n    \"city\": \"Hanoi\"\n  },\n  \"items\": [\n    { \"sku\": \"SKU-1\", \"quantity\": 2 }\n  ]\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/orders",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "orders"]
+        }
+      }
+    },
+    {
+      "name": "3. Order Service - Get Order Details",
       "request": {
         "method": "GET",
         "header": [],
         "url": {
-          "raw": "{{base_url}}/actuator/health",
-          "host": ["{{base_url}}"],
-          "path": ["actuator", "health"]
+          "raw": "http://localhost:8000/api/v1/orders/ORD-10001",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "orders", "ORD-10001"]
         }
       }
-    }
-  ],
-  "variable": [
+    },
     {
-      "key": "base_url",
-      "value": "http://localhost:8001"
+      "name": "4. Shipment Integration - Start Shipment",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"orderId\": \"ORD-10001\",\n  \"carrierPreference\": \"FAST_SHIP\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/shipments",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "shipments"]
+        }
+      }
+    },
+    {
+      "name": "5. Carrier Partner Mock - Get Quote",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"originCity\": \"Hanoi\",\n  \"destinationCity\": \"Danang\",\n  \"destinationCountry\": \"VN\",\n  \"weightKg\": 5.0\n}"
+        },
+        "url": {
+          "raw": "http://localhost:8000/api/v1/carrier/quotes",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "carrier", "quotes"]
+        }
+      }
+    },
+    {
+      "name": "6. QA Service - Run Synthetic Test Scenario",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/api/v1/qa/scenarios/SCENARIO-E2E-01/run",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["api", "v1", "qa", "scenarios", "SCENARIO-E2E-01", "run"]
+        }
+      }
     }
   ]
 }

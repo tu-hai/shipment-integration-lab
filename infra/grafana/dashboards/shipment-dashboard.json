@@ -1,0 +1,89 @@
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 0,
+  "id": null,
+  "links": [],
+  "liveNow": false,
+  "panels": [
+    {
+      "title": "Total Orders Created",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 0 },
+      "targets": [
+        {
+          "expr": "order_created_total",
+          "legendFormat": "Orders Created"
+        }
+      ]
+    },
+    {
+      "title": "Total Shipments Processed",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 0 },
+      "targets": [
+        {
+          "expr": "shipment_request_total",
+          "legendFormat": "Shipment Requests"
+        }
+      ]
+    },
+    {
+      "title": "Shipment Retries & Failures",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 0 },
+      "targets": [
+        {
+          "expr": "shipment_retry_total",
+          "legendFormat": "Shipment Retries"
+        }
+      ]
+    },
+    {
+      "title": "Carrier Partner Quotes & Bookings",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 0 },
+      "targets": [
+        {
+          "expr": "carrier_mock_quotes_total",
+          "legendFormat": "Carrier Quotes"
+        }
+      ]
+    },
+    {
+      "title": "HTTP Request Rate (req/sec)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "targets": [
+        {
+          "expr": "rate(http_server_requests_seconds_count[1m])",
+          "legendFormat": "{{job}} - {{uri}}"
+        }
+      ]
+    },
+    {
+      "title": "HTTP Request Latency (p95)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_server_requests_seconds_bucket[1m])) by (le, job))",
+          "legendFormat": "p95 Latency - {{job}}"
+        }
+      ]
+    }
+  ],
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "style": "dark",
+  "tags": ["shipment", "microservices", "observability"],
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "title": "Shipment Integration Lab Dashboard",
+  "uid": "shipment-integration-overview"
+}

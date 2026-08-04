@@ -1,6 +1,16 @@
+server:
+  port: ${SERVER_PORT:8004}
+
 spring:
   application:
     name: qa-service
 
-server:
-  port: 8004
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true

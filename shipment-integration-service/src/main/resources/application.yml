@@ -1,6 +1,37 @@
+server:
+  port: ${SERVER_PORT:8002}
+
 spring:
   application:
     name: shipment-integration-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
+    listener:
+      simple:
+        retry:
+          enabled: true
+          initial-interval: 1000ms
+          max-attempts: 3
+          max-interval: 5000ms
+          multiplier: 2.0
 
-server:
-  port: 8002
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+app:
+  carrier-mock:
+    url: ${CARRIER_MOCK_URL:http://localhost:8003/api/v1/carrier}
+  rabbitmq:
+    exchange: shipment.integration.exchange
+    queue: shipment.integration.order.created.q
+    dlq: shipment.integration.dlq

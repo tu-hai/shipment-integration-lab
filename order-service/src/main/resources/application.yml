@@ -1,6 +1,27 @@
+server:
+  port: ${SERVER_PORT:8001}
+
 spring:
   application:
     name: order-service
+  rabbitmq:
+    host: ${RABBITMQ_HOST:localhost}
+    port: ${RABBITMQ_PORT:5672}
+    username: ${RABBITMQ_USERNAME:guest}
+    password: ${RABBITMQ_PASSWORD:guest}
 
-server:
-  port: 8001
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  metrics:
+    export:
+      prometheus:
+        enabled: true
+
+app:
+  rabbitmq:
+    exchange: shipment.integration.exchange
+    routing-key: order.created
+    queue: shipment.integration.order.created.q

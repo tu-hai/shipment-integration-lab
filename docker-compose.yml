@@ -1,43 +1,59 @@
 services:
   order-service:
     image: shipment-integration-lab/order-service:local
+    build:
+      context: ./order-service
     container_name: order-service
     environment:
-      SERVER_PORT: ${ORDER_SERVICE_PORT:-8001}
+      SERVER_PORT: 8001
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
     ports:
-      - "${ORDER_SERVICE_PORT:-8001}:8001"
-    networks:
-      - shipment-integration-net
-
-  shipment-integration-service:
-    image: shipment-integration-lab/shipment-integration-service:local
-    container_name: shipment-integration-service
-    environment:
-      SERVER_PORT: ${SHIPMENT_INTEGRATION_SERVICE_PORT:-8002}
-    ports:
-      - "${SHIPMENT_INTEGRATION_SERVICE_PORT:-8002}:8002"
+      - "8001:8001"
     depends_on:
       - rabbitmq
     networks:
       - shipment-integration-net
 
+  shipment-integration-service:
+    image: shipment-integration-lab/shipment-integration-service:local
+    build:
+      context: ./shipment-integration-service
+    container_name: shipment-integration-service
+    environment:
+      SERVER_PORT: 8002
+      RABBITMQ_HOST: rabbitmq
+      RABBITMQ_PORT: 5672
+      CARRIER_MOCK_URL: http://carrier-mock-service:8003/api/v1/carrier
+    ports:
+      - "8002:8002"
+    depends_on:
+      - rabbitmq
+      - carrier-mock-service
+    networks:
+      - shipment-integration-net
+
   carrier-mock-service:
     image: shipment-integration-lab/carrier-mock-service:local
+    build:
+      context: ./carrier-mock-service
     container_name: carrier-mock-service
     environment:
-      SERVER_PORT: ${CARRIER_MOCK_SERVICE_PORT:-8003}
+      SERVER_PORT: 8003
     ports:
-      - "${CARRIER_MOCK_SERVICE_PORT:-8003}:8003"
+      - "8003:8003"
     networks:
       - shipment-integration-net
 
   qa-service:
     image: shipment-integration-lab/qa-service:local
+    build:
+      context: ./qa-service
     container_name: qa-service
     environment:
-      SERVER_PORT: ${QA_SERVICE_PORT:-8004}
+      SERVER_PORT: 8004
     ports:
-      - "${QA_SERVICE_PORT:-8004}:8004"
+      - "8004:8004"
     networks:
       - shipment-integration-net
 
@@ -45,10 +61,10 @@ services:
     image: rabbitmq:3.13-management
     container_name: shipment-rabbitmq
     ports:
-      - "${RABBITMQ_AMQP_PORT:-5672}:5672"
-      - "${RABBITMQ_MANAGEMENT_PORT:-15672}:15672"
+      - "5672:5672"
+      - "15672:15672"
     volumes:
-      - ./infra/rabbitmq:/etc/rabbitmq
+      - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
     networks:
       - shipment-integration-net
 
@@ -60,7 +76,7 @@ services:
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: admin
     ports:
-      - "${KEYCLOAK_HTTP_PORT:-8080}:8080"
+      - "8080:8080"
     volumes:
       - ./infra/keycloak:/opt/keycloak/data/import
     networks:
@@ -78,8 +94,8 @@ services:
       KONG_ADMIN_ERROR_LOG: /dev/stderr
       KONG_ADMIN_LISTEN: "0.0.0.0:8001"
     ports:
-      - "${KONG_PROXY_PORT:-8000}:8000"
-      - "${KONG_ADMIN_PORT:-8001}:8001"
+      - "8000:8000"
+      - "8001:8001"
     volumes:
       - ./infra/kong/kong.yaml:/etc/kong/kong.yaml:ro
     depends_on:
@@ -87,6 +103,66 @@ services:
       - shipment-integration-service
       - carrier-mock-service
       - qa-service
+    networks:
+      - shipment-integration-net
+
+  prometheus:
+    image: prom/prometheus:v2.51.0
+    container_name: shipment-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    networks:
+      - shipment-integration-net
+
+  grafana:
+    image: grafana/grafana:10.4.0
+    container_name: shipment-grafana
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards
+    depends_on:
+      - prometheus
+    networks:
+      - shipment-integration-net
+
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.18
+    container_name: shipment-elasticsearch
+    environment:
+      - discovery.type=single-node
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    networks:
+      - shipment-integration-net
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.17.18
+    container_name: shipment-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+    networks:
+      - shipment-integration-net
+
+  fluent-bit:
+    image: fluent/fluent-bit:3.0.0
+    container_name: shipment-fluentbit
+    volumes:
+      - ./infra/efk/fluent-bit.conf:/fluent-bit/etc/fluent-bit.conf:ro
+      - ./infra/efk/parsers.conf:/fluent-bit/etc/parsers.conf:ro
+    depends_on:
+      - elasticsearch
     networks:
       - shipment-integration-net
 

@@ -1,5 +1,71 @@
 _format_version: "3.0"
 
-services: []
+services:
+  - name: order-service
+    url: http://order-service:8001
+    routes:
+      - name: order-route
+        paths:
+          - /api/v1/orders
+        strip_path: false
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
 
-routes: []
+  - name: shipment-integration-service
+    url: http://shipment-integration-service:8002
+    routes:
+      - name: shipment-route
+        paths:
+          - /api/v1/shipments
+        strip_path: false
+    plugins:
+      - name: rate-limiting
+        config:
+          minute: 100
+          policy: local
+
+  - name: carrier-mock-service
+    url: http://carrier-mock-service:8003
+    routes:
+      - name: carrier-route
+        paths:
+          - /api/v1/carrier
+        strip_path: false
+
+  - name: qa-service
+    url: http://qa-service:8004
+    routes:
+      - name: qa-route
+        paths:
+          - /api/v1/qa
+        strip_path: false
+
+plugins:
+  - name: correlation-id
+    config:
+      header_name: X-Correlation-ID
+      generator: uuid
+      echo_downstream: true
+
+  - name: cors
+    config:
+      origins:
+        - "*"
+      methods:
+        - GET
+        - POST
+        - PUT
+        - PATCH
+        - DELETE
+        - OPTIONS
+      headers:
+        - Accept
+        - Authorization
+        - Content-Type
+        - X-Correlation-ID
+      exposed_headers:
+        - X-Correlation-ID
+      max_age: 3600
