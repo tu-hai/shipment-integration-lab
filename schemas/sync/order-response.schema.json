@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/order-response.schema.json",
+  "title": "OrderResponse",
+  "type": "object",
+  "required": ["orderId", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "pattern": "^ORD-[A-Za-z0-9\\-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["CREATED", "CONFIRMED", "CANCELLED"]
+    }
+  }
+}

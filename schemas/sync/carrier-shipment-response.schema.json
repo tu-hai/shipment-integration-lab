@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/carrier-shipment-response.schema.json",
+  "title": "CarrierShipmentResponse",
+  "type": "object",
+  "required": ["carrierShipmentId", "status"],
+  "additionalProperties": false,
+  "properties": {
+    "carrierShipmentId": {
+      "type": "string",
+      "pattern": "^CRS-[A-Za-z0-9\\-]+$"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["BOOKED", "IN_TRANSIT", "DELIVERED", "FAILED"]
+    }
+  }
+}

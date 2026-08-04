@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/carrier-quote-request.schema.json",
+  "title": "CarrierQuoteRequest",
+  "type": "object",
+  "required": ["orderId", "destinationCountry", "totalWeightKg"],
+  "additionalProperties": false,
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "pattern": "^ORD-[A-Za-z0-9\\-]+$"
+    },
+    "destinationCountry": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 2
+    },
+    "totalWeightKg": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    }
+  }
+}

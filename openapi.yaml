@@ -1,0 +1,395 @@
+openapi: 3.1.0
+info:
+  title: Shipment Integration Lab API
+  version: 1.0.0
+  description: |
+    Unified synchronous API contract for the shipment integration domain.
+servers:
+  - url: http://localhost:8000
+    description: Local gateway
+tags:
+  - name: Order Service
+  - name: Shipment Integration Service
+  - name: Carrier Mock Service
+  - name: QA Service
+paths:
+  /api/v1/orders:
+    post:
+      tags: [Order Service]
+      summary: Create order
+      operationId: createOrder
+      security:
+        - bearerAuth: [order.write]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/XCorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/sync/order-create-request.schema.json'
+      responses:
+        '201':
+          description: Order created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/order-response.schema.json'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v1/orders/{orderId}:
+    get:
+      tags: [Order Service]
+      summary: Get order
+      operationId: getOrder
+      security:
+        - bearerAuth: [order.read]
+      parameters:
+        - $ref: '#/components/parameters/OrderId'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '200':
+          description: Order detail
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/order-response.schema.json'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/shipments:
+    post:
+      tags: [Shipment Integration Service]
+      summary: Create shipment orchestration request
+      operationId: createShipment
+      security:
+        - bearerAuth: [shipment.write]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/XCorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/sync/shipment-create-request.schema.json'
+      responses:
+        '202':
+          description: Shipment accepted for orchestration
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/shipment-response.schema.json'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v1/shipments/{shipmentId}:
+    get:
+      tags: [Shipment Integration Service]
+      summary: Get shipment status
+      operationId: getShipment
+      security:
+        - bearerAuth: [shipment.read]
+      parameters:
+        - $ref: '#/components/parameters/ShipmentId'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '200':
+          description: Shipment status
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/shipment-response.schema.json'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/shipments/{shipmentId}/retry:
+    post:
+      tags: [Shipment Integration Service]
+      summary: Retry shipment orchestration
+      operationId: retryShipment
+      security:
+        - bearerAuth: [shipment.retry]
+      parameters:
+        - $ref: '#/components/parameters/ShipmentId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '202':
+          description: Retry accepted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/retry-response.schema.json'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v1/carrier/quotes:
+    post:
+      tags: [Carrier Mock Service]
+      summary: Get mocked carrier quote
+      operationId: getCarrierQuote
+      security:
+        - bearerAuth: [carrier.quote]
+      parameters:
+        - $ref: '#/components/parameters/XCorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/sync/carrier-quote-request.schema.json'
+      responses:
+        '200':
+          description: Quote response
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/carrier-quote-response.schema.json'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/v1/carrier/shipments:
+    post:
+      tags: [Carrier Mock Service]
+      summary: Create mocked carrier shipment
+      operationId: createCarrierShipment
+      security:
+        - bearerAuth: [carrier.shipment.write]
+      parameters:
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/XCorrelationId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './schemas/sync/carrier-shipment-create-request.schema.json'
+      responses:
+        '201':
+          description: Carrier shipment created
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/carrier-shipment-response.schema.json'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+  /api/v1/carrier/shipments/{carrierShipmentId}:
+    get:
+      tags: [Carrier Mock Service]
+      summary: Get mocked carrier shipment status
+      operationId: getCarrierShipment
+      security:
+        - bearerAuth: [carrier.shipment.read]
+      parameters:
+        - $ref: '#/components/parameters/CarrierShipmentId'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '200':
+          description: Carrier shipment status
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/carrier-shipment-response.schema.json'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/qa/scenarios/{scenarioId}/seed:
+    post:
+      tags: [QA Service]
+      summary: Seed QA scenario
+      operationId: seedScenario
+      security:
+        - bearerAuth: [qa.seed]
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '202':
+          description: Seed request accepted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/qa-action-response.schema.json'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/qa/scenarios/{scenarioId}/run:
+    post:
+      tags: [QA Service]
+      summary: Run QA scenario
+      operationId: runScenario
+      security:
+        - bearerAuth: [qa.run]
+      parameters:
+        - $ref: '#/components/parameters/ScenarioId'
+        - $ref: '#/components/parameters/IdempotencyKey'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '202':
+          description: Run request accepted
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/qa-action-response.schema.json'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/v1/qa/reports/{reportId}:
+    get:
+      tags: [QA Service]
+      summary: Get QA report
+      operationId: getQaReport
+      security:
+        - bearerAuth: [qa.read]
+      parameters:
+        - $ref: '#/components/parameters/ReportId'
+        - $ref: '#/components/parameters/XCorrelationId'
+      responses:
+        '200':
+          description: Report detail
+          content:
+            application/json:
+              schema:
+                $ref: './schemas/sync/qa-report-response.schema.json'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    XCorrelationId:
+      in: header
+      name: X-Correlation-Id
+      description: End-to-end request trace identifier.
+      required: false
+      schema:
+        type: string
+        pattern: '^[a-zA-Z0-9\-_.]{8,128}$'
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      description: Required for write operations to guarantee at-least-once safe retries.
+      required: true
+      schema:
+        type: string
+        pattern: '^[a-zA-Z0-9\-_.]{16,128}$'
+    OrderId:
+      in: path
+      name: orderId
+      required: true
+      schema:
+        type: string
+        pattern: '^ORD-[A-Za-z0-9\-]+$'
+    ShipmentId:
+      in: path
+      name: shipmentId
+      required: true
+      schema:
+        type: string
+        pattern: '^SHP-[A-Za-z0-9\-]+$'
+    CarrierShipmentId:
+      in: path
+      name: carrierShipmentId
+      required: true
+      schema:
+        type: string
+        pattern: '^CRS-[A-Za-z0-9\-]+$'
+    ScenarioId:
+      in: path
+      name: scenarioId
+      required: true
+      schema:
+        type: string
+        pattern: '^SCN-[A-Za-z0-9\-]+$'
+    ReportId:
+      in: path
+      name: reportId
+      required: true
+      schema:
+        type: string
+        pattern: '^QAR-[A-Za-z0-9\-]+$'
+  responses:
+    BadRequest:
+      description: Request validation failed.
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/sync/error-response.schema.json'
+    Unauthorized:
+      description: Missing or invalid token.
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/sync/error-response.schema.json'
+    Forbidden:
+      description: Token does not have required scope.
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/sync/error-response.schema.json'
+    NotFound:
+      description: Target resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/sync/error-response.schema.json'
+    Conflict:
+      description: Duplicate or state conflict.
+      content:
+        application/json:
+          schema:
+            $ref: './schemas/sync/error-response.schema.json'

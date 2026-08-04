@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/shipment-create-request.schema.json",
+  "title": "ShipmentCreateRequest",
+  "type": "object",
+  "required": ["orderId", "carrierPreference"],
+  "additionalProperties": false,
+  "properties": {
+    "orderId": {
+      "type": "string",
+      "pattern": "^ORD-[A-Za-z0-9\\-]+$"
+    },
+    "carrierPreference": {
+      "type": "string",
+      "enum": ["FAST_SHIP", "ECONOMY_SHIP", "STANDARD_SHIP"]
+    }
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/sync/carrier-quote-response.schema.json",
+  "title": "CarrierQuoteResponse",
+  "type": "object",
+  "required": ["carrierCode", "currency", "amount", "estimatedDays"],
+  "additionalProperties": false,
+  "properties": {
+    "carrierCode": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 32
+    },
+    "currency": {
+      "type": "string",
+      "pattern": "^[A-Z]{3}$"
+    },
+    "amount": {
+      "type": "number",
+      "minimum": 0
+    },
+    "estimatedDays": {
+      "type": "integer",
+      "minimum": 1
+    }
+  }
+}
