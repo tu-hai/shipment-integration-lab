@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://shipment-integration-lab.local/schemas/async/shipment-completed-v1.schema.json",
+  "title": "ShipmentCompletedV1",
+  "allOf": [
+    {
+      "$ref": "./event-envelope.schema.json"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "eventType": {
+          "const": "shipment.completed.v1"
+        },
+        "eventVersion": {
+          "pattern": "^1\\.[0-9]+\\.[0-9]+$"
+        },
+        "producer": {
+          "const": "shipment-integration-service"
+        },
+        "payload": {
+          "type": "object",
+          "required": ["shipmentId", "orderId", "carrierShipmentId"],
+          "additionalProperties": false,
+          "properties": {
+            "shipmentId": {
+              "type": "string",
+              "pattern": "^SHP-[A-Za-z0-9\\-]+$"
+            },
+            "orderId": {
+              "type": "string",
+              "pattern": "^ORD-[A-Za-z0-9\\-]+$"
+            },
+            "carrierShipmentId": {
+              "type": "string",
+              "pattern": "^CRS-[A-Za-z0-9\\-]+$"
+            }
+          }
+        }
+      }
+    }
+  ]
+}
