@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: qa-service-test
+
+server:
+  port: 0
