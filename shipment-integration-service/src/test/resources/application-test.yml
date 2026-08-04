@@ -1,0 +1,6 @@
+spring:
+  application:
+    name: shipment-integration-service-test
+
+server:
+  port: 0
